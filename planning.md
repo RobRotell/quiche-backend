@@ -1,0 +1,93 @@
+# Quiche
+
+## Database
+### Tables
+- expenses
+	- id (int)
+	- year (date)
+	- month (date)
+	- date (date)
+	- vendor (id)
+	- description (string)
+	- category (id)
+	- payType (id)
+	- amount (float)
+- vendor
+	- id (int)
+	- name (string)
+- payTypes
+	- id (int)
+	- name (string)
+	- *options*
+		- credit
+			- elan
+			- chase
+		- checking
+		- check
+		- cash
+- category
+	- id (int)
+	- name (string)
+	- *options*
+		- food
+		- misc
+		- groceries
+		- gas
+		- bills
+- auth
+	- username
+	- password (hashed)
+	- auth
+		- key
+		- expiry (two weeks)
+
+## Backend
+- controllers
+	- database
+	- endpoints
+	- auth
+		- createAuth
+		- validateAuth
+	- vendors
+		- getVendors
+		- createVendor
+	- payTypes
+		- getPayTypes
+		- createPayType
+	- categories
+		- getCategories
+		- createCategory
+- models
+	- entry
+	- month (of entries)
+	- year (of entries)
+- routes
+	- entries
+		- getEntries
+			- month/year
+			- year
+			- vendor
+			- payTypes
+			- category
+		- addEntry
+			- month
+			- year
+			- vendor
+			- description
+			- category
+			- payType
+			- amount
+		- deleteEntry
+		- editEntry
+	- auth
+		- createAuth
+		- validateAuth
+	- vendors
+		- getVendors
+		- createVendor
+	- payTypes
+		- getPayTypes
+		- createPayType
+	- categoriyes
+		- getCategories
+		- createCategory
