@@ -45,4 +45,5 @@ model Auth {
 	username 	String
 	password 	String
 	auth     	String
+	expiry 		DateTime
 }

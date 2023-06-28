@@ -88,6 +88,6 @@
 	- payTypes
 		- getPayTypes
 		- createPayType
-	- categoriyes
+	- categories
 		- getCategories
 		- createCategory
