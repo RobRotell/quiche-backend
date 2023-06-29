@@ -10,6 +10,7 @@ const router = express.Router()
 
 
 // get all expenses
+// todo -- for testing only; should be disabled before launch
 router.get( '/', async ( req, res ) => {
 	const expenses = await Expenses.getExpenses()
 
@@ -25,7 +26,6 @@ router.get( '/:id', async ( req, res ) => {
 
 	if ( Number.isNaN( id ) ) {
 		return res.status( 400 ).json({
-			code: 400,
 			error: true,
 			data: 'ID must be a numerical value.',
 		})
@@ -84,7 +84,6 @@ router.get( '/year/:year', async ( req, res ) => {
 
 	if ( errors.length ) {
 		return res.status( 400 ).json({
-			code: 400,
 			error: true,
 			data: errors,
 		})
@@ -116,7 +115,10 @@ router.get( '/year/:year/month/:month', async ( req, res ) => {
 	}
 
 	if ( errors.length ) {
-		return res.status( 400 ).json( errors )
+		return res.status( 400 ).json({
+			error: true,
+			data: errors,
+		})
 	}
 
 	const expenses = await Expenses.getExpensesByYearAndMonth( year, month )

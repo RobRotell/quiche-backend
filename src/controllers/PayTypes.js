@@ -1,55 +1,9 @@
-import { PrismaClient } from '@prisma/client'
+import Taxonomy from './Taxonomy'
 
 
-const prisma = new PrismaClient()
+class PayTypes extends Taxonomy {
 
-
-const baseQueryArgs = {
-	select: {
-		id: true,
-		name: true,
-	},
-	orderBy: [
-		{
-			id: 'asc',
-		},
-	],
-}
-
-
-class PayTypes {
-
-	/**
-	 * Get all pay types, sorted ascending by ID
-	 *
-	 * @return {Promise} resolves to array of pay types
-	 */
-	static getPayTypes() {
-		return prisma.payType.findMany( baseQueryArgs )
-	}
-
-
-	/**
-	 * Validate that argument is a valid pay type ID
-	 *
-	 * @param {mixed} arg
-	 * @return {Integer|false} Pay type ID, if valid; otherwise, false
-	 */
-	static async validateId( arg ) {
-		const argInt = parseInt( arg, 10 )
-
-		if ( Number.isNaN( argInt ) ) {
-			return false
-		}
-
-		const match = await prisma.payType.findFirst({
-			where: {
-				id: argInt,
-			},
-		})
-
-		return match ? argInt : false
-	}
+	static schemaName = 'payType'
 
 }
 

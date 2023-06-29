@@ -40,7 +40,7 @@ class Expenses {
 	/**
 	 * Get all expenses, sorted descending by date
 	 *
-	 * @param {Integer} id
+	 * @param {int} id
 	 * @return {Promise} resolves to object of expense (or null if no matches)
 	 */
 	static getExpenseById( id ) {
@@ -55,7 +55,7 @@ class Expenses {
 	/**
 	 * Get all expenses for a given year, sorted descending by date
 	 *
-	 * @param {Integer} year
+	 * @param {int} year
 	 * @param {Object} filters Vendor, category, and pay type IDs
 	 *
 	 * @return {Promise} resolves to array of expenses
@@ -72,8 +72,8 @@ class Expenses {
 	/**
 	 * Get all expenses for a given month in a given year, sorted descending by date
 	 *
-	 * @param {Integer} year
-	 * @param {Integer} month
+	 * @param {int} year
+	 * @param {int} month
 	 *
 	 * @return {Promise} resolves to array of expenses
 	 */
