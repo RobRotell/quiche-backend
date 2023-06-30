@@ -22,7 +22,9 @@ router.post( '/', async ( req, res ) => {
 	if ( !name ) {
 		return res.status( 400 ).json({
 			error: true,
-			data: 'A name must be passed to create a pay type.',
+			data: {
+				errors: 'A name must be passed to create a pay type.',
+			},
 		})
 	}
 
@@ -49,7 +51,9 @@ router.delete( '/', async ( req, res ) => {
 	if ( Number.isNaN( id ) ) {
 		return res.status( 400 ).json({
 			error: true,
-			data: 'A numerical ID must be passed to delete a pay type.',
+			data: {
+				errors: 'A numerical ID must be passed to delete a pay type.',
+			},
 		})
 	}
 
