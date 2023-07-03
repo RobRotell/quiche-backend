@@ -1,5 +1,5 @@
 import express from 'express'
-import PayTypes from '../controllers/PayTypes'
+import { PayTypes } from '../controllers/PayTypes'
 
 
 const router = express.Router()

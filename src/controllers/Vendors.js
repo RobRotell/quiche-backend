@@ -1,11 +1,8 @@
-import Taxonomy from './Taxonomy'
+import { Taxonomy } from './Taxonomy'
 
 
-class Vendors extends Taxonomy {
+export class Vendors extends Taxonomy {
 
 	static schemaName = 'vendor'
 
 }
-
-
-export default Vendors

@@ -5,7 +5,7 @@
 	"main": "./bin/www.js",
 	"scripts": {
 		"start": "NODE_OPTIONS='--experimental-specifier-resolution=node' node ./bin/www",
-		"watch": "node-dev --respawn ./bin/www  --es-module-specifier-resolution=node"
+		"dev": "node-dev --respawn ./bin/www  --es-module-specifier-resolution=node"
 	},
 	"repository": {
 		"type": "git",

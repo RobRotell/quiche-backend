@@ -151,6 +151,3 @@ export class Taxonomy {
 	}
 
 }
-
-
-export default Taxonomy

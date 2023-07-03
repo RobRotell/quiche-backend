@@ -1,11 +1,8 @@
-import Taxonomy from './Taxonomy'
+import { Taxonomy } from './Taxonomy'
 
 
-class PayTypes extends Taxonomy {
+export class PayTypes extends Taxonomy {
 
 	static schemaName = 'payType'
 
 }
-
-
-export default PayTypes

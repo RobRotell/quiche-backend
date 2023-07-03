@@ -1,62 +1,47 @@
-import { PrismaClient } from '@prisma/client'
+import { Categories } from './Categories'
 import ExpenseModel from '../models/Expense'
-import Categories from './Categories'
-import PayTypes from './PayTypes'
-import Vendors from './Vendors'
-import { validateMonth, validateYear } from '../util/dates'
+import { PayTypes } from './PayTypes'
+import { Vendors } from './Vendors'
+import { DbClient } from './DbClient'
+import { ExpenseQueryArgs } from '../models/ExpenseQueryArgs'
 
 
-const prisma = new PrismaClient()
-
-
-// exclude vendorId, categoryId, payTypeId
-const baseQueryArgs = {
-	select: {
-		id: true,
-		year: true,
-		month: true,
-		date: true,
-		description: true,
-		amount: true,
-		vendor: true,
-		category: true,
-		payType: true,
-	},
-	orderBy: [
-		{
-			date: 'desc',
-		},
-		{
-			amount: 'desc',
-		},
-	],
-}
-
-
-class Expenses {
+export class Expenses {
 
 	/**
 	 * Get all expenses, sorted descending by date
 	 *
-	 * @param {Object} args
+	 * @throws {Error} Argument isn't a QueryArgument instance
+	 * @throws {Error} QueryArgument has errors
+	 *
+	 * @param {QueryArguments} queryArgs
 	 * @return {Array}
 	 */
-	static async getExpenses( args ) {
-		const queryArgs = this.createQueryArgs( args )
-		const expenses = await prisma.expense.findMany( queryArgs )
+	static async getExpenses( queryArgs ) {
+		if ( !( queryArgs instanceof ExpenseQueryArgs ) ) {
+			throw new Error( 'Argument must be an instance of ExpenseQueryArgs class.' )
+		}
+
+		if ( queryArgs.getErrors().length ) {
+			throw new Error( 'Argument has errors and cannot be used to query expenses.' )
+		}
+
+		const query = this.buildDbQuery( queryArgs )
+		const client = DbClient.getClient()
+		const expenses = await client.expense.findMany( query )
 
 		return expenses.map( expense => new ExpenseModel( expense ).package() )
 	}
 
 
 	/**
-	 * Prettify and format args to pass to execute query
+	 * Build Prisma-compatible query object from query args
 	 *
-	 * @param {Object} args
+	 * @param {Object} queryArgs
 	 * @return {Object}
 	 */
-	static createQueryArgs( args ) {
-		const queryArgs = {
+	static buildDbQuery( queryArgs ) {
+		const query = {
 			select: {
 				id: true,
 				year: true,
@@ -73,37 +58,36 @@ class Expenses {
 				{
 					date: 'desc',
 				},
+				{
+					id: 'desc',
+				},
 			],
 		}
 
-		// eslint-disable-next-line object-curly-newline
-		const { id, year, month, vendor, category, paytype } = args
-
-		if ( id ) {
-			queryArgs.where.id = id
+		if ( queryArgs.id ) {
+			query.where.id = queryArgs.id
 		}
 
-		if ( year ) {
-			queryArgs.where.year = year
+		if ( queryArgs.year ) {
+			query.where.year = queryArgs.year
 		}
 
-		if ( month ) {
-			queryArgs.where.month = month
+		if ( queryArgs.month ) {
+			query.where.month = queryArgs.month
 		}
 
-		if ( vendor ) {
-			queryArgs.where.vendor = vendor
+		if ( queryArgs.date ) {
+			query.where.date = queryArgs.date
 		}
 
-		if ( category ) {
-			queryArgs.where.category = category
+		if ( queryArgs.startDate && queryArgs.endDate ) {
+			query.where.date = {
+				lte: queryArgs.endDate,
+				gte: queryArgs.startDate,
+			}
 		}
 
-		if ( paytype ) {
-			queryArgs.where.payType = paytype
-		}
-
-		return queryArgs
+		return query
 	}
 
 
@@ -216,6 +200,3 @@ class Expenses {
 	}
 
 }
-
-
-export default Expenses
