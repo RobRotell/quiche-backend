@@ -1,13 +1,26 @@
-import { PrismaClient } from '@prisma/client'
+import { DbClient } from './DbClient'
 
 
-const prisma = new PrismaClient()
-
-
-class Taxonomy {
+export class Taxonomy {
 
 
 	static schemaName = null
+
+	static dbClient = null
+
+
+	/**
+	 * Get Prisma client
+	 *
+	 * @return {Object} Prisma client
+	 */
+	static getDbClient() {
+		if ( null === this.dbClient ) {
+			this.dbClient = DbClient.getClient()
+		}
+
+		return this.dbClient
+	}
 
 
 	/**
@@ -16,7 +29,9 @@ class Taxonomy {
 	 * @return {Promise<array>} resolves to array of terms
 	 */
 	static getAll() {
-		return prisma[this.schemaName].findMany({
+		const client = this.getDbClient()
+
+		return client[this.schemaName].findMany({
 			orderBy: [
 				{
 					id: 'asc',
@@ -39,7 +54,9 @@ class Taxonomy {
 			return false
 		}
 
-		const match = await prisma[this.schemaName].findFirst({
+		const client = this.getDbClient()
+
+		const match = await client[this.schemaName].findFirst({
 			where: {
 				id: argInt,
 			},
@@ -60,7 +77,9 @@ class Taxonomy {
 			return false
 		}
 
-		const match = await prisma[this.schemaName].findFirst({
+		const client = this.getDbClient()
+
+		const match = await client[this.schemaName].findFirst({
 			where: {
 				name: arg,
 			},
@@ -90,8 +109,10 @@ class Taxonomy {
 			return match
 		}
 
+		const client = this.getDbClient()
+
 		// will return an id/name object
-		const payType = await prisma[this.schemaName].create({
+		const payType = await client[this.schemaName].create({
 			data: {
 				name,
 			},
@@ -114,11 +135,13 @@ class Taxonomy {
 			return new Error( 'Term ID must be an integer.' )
 		}
 
+		const client = this.getDbClient()
+
 		/**
 		 * Using deleteMany vs delete to avoid "Record to delete does not exist" errors (at least until Prisma comes
 		 * out with a "delete if exists" option)
 		 */
-		await prisma[this.schemaName].deleteMany({
+		await client[this.schemaName].deleteMany({
 			where: {
 				id,
 			},

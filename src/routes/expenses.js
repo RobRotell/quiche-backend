@@ -1,9 +1,7 @@
 import express from 'express'
 import Expenses from '../controllers/Expenses'
-import { validateMonth, validateYear } from '../util/dates'
-import Vendors from '../controllers/Vendors'
-import Categories from '../controllers/Categories'
-import PayTypes from '../controllers/PayTypes'
+import { validateDateFormat, validateStartDateBeforeEndDate, validateYear } from '../util/dates'
+import { ErrorResponseBody } from '../models/ErrorResponse'
 
 
 const router = express.Router()
@@ -25,13 +23,10 @@ router.get( '/:id', async ( req, res ) => {
 	id = parseInt( id, 10 )
 
 	if ( Number.isNaN( id ) ) {
-		return res.status( 400 ).json({
-			error: true,
-			data: 'ID must be a numerical value.',
-		})
+		return res.status( 400 ).json( new ErrorResponseBody( 'ID must be a numerical value.' ) )
 	}
 
-	const expense = await Expenses.getExpenseById( id )
+	const expense = await Expenses.getExpenses({ id })
 
 	return res.json({ expense })
 })
@@ -41,57 +36,38 @@ router.get( '/:id', async ( req, res ) => {
 router.get( '/year/:year', async ( req, res ) => {
 	const { params, query } = req
 
-	const errors = []
+	const { year } = params
 
-	// ensure valid year
-	let { year } = params
-
-	year = validateYear( year )
-
+	// bare-minimum -- requires at least a year
+	// todo refactor as current approach allows non-numerical string
 	if ( !year ) {
-		errors.push( 'Year must be a numerical value between 2010 and 9999.' )
+		return res.status( 400 ).json(
+			new ErrorResponseBody(
+				'This endpoint requires a numerical year between 2014 and 9999 to query expenses.',
+			),
+		)
 	}
 
-	// check for pay type, category, and vendor arguments
-	let { vendor, category, paytype } = query
+	// grab filter values
+	const { vendor, category, paytype } = query
 
-	// ensure vendor arg is a valid vendor ID
-	if ( vendor ) {
-		vendor = await Vendors.validateId( vendor )
-
-		if ( !vendor ) {
-			errors.push( 'Vendor must be a valid vendor ID.' )
-		}
+	const args = {
+		year,
+		vendorId: parseInt( vendor, 10 ),
+		categoryId: parseInt( category, 10 ),
+		paytypeId: parseInt( paytype, 10 ),
 	}
 
-	// ensure category arg is a valid category ID
-	if ( category ) {
-		category = await Categories.validateId( category )
+	// if invalid, an array of error messages is returned
+	const isValid = await Expenses.validateExpenseArgs( args )
 
-		if ( !category ) {
-			errors.push( 'Vendor must be a valid category ID.' )
-		}
+	if ( Array.isArray( isValid ) && isValid.length ) {
+		const argErrors = isValid
+
+		return res.status( 400 ).json( new ErrorResponseBody( argErrors ) )
 	}
 
-	// ensure pay type arg is a valid pay type ID
-	if ( paytype ) {
-		paytype = await PayTypes.validateId( paytype )
-
-		if ( !paytype ) {
-			errors.push( 'Vendor must be a valid paytype ID.' )
-		}
-	}
-
-	if ( errors.length ) {
-		return res.status( 400 ).json({
-			error: true,
-			data: errors,
-		})
-	}
-
-	const expenses = await Expenses.getExpensesByYear( year, {
-		vendor, category, paytype,
-	})
+	const expenses = await Expenses.getExpenses( args )
 
 	return res.json({ expenses })
 })
@@ -99,31 +75,81 @@ router.get( '/year/:year', async ( req, res ) => {
 
 // get expenses by year and month
 router.get( '/year/:year/month/:month', async ( req, res ) => {
-	let { year, month } = req.params
+	const { params, query } = req
 
-	year = validateYear( year )
-	month = validateMonth( month )
+	const { year, month } = params
 
-	const errors = []
+	const baseArgErrors = []
 
+	// endpoint requires a year
+	// todo refactor as current approach allows non-numerical string
 	if ( !year ) {
-		errors.push( 'Year must be a numerical value between 2010 and 9999.' )
+		baseArgErrors.push( 'This endpoint requires a year to query expenses.' )
 	}
 
+	// endpoint requires a month
+	// todo -- refactor as current approach allows non-numerical strings
 	if ( !month ) {
-		errors.push( 'Month must be a numerical value between 1 and 12.' )
+		baseArgErrors.push( 'This endpoint requires a month to query expenses.' )
 	}
 
-	if ( errors.length ) {
+	if ( baseArgErrors.length ) {
+		return res.status( 400 ).json( new ErrorResponseBody( baseArgErrors ) )
+	}
+
+	// grab filter values
+	const { vendor, category, paytype } = query
+
+	const args = {
+		year,
+		month,
+		vendorId: parseInt( vendor, 10 ),
+		categoryId: parseInt( category, 10 ),
+		paytypeId: parseInt( paytype, 10 ),
+	}
+
+	// if invalid, an array of error messages is returned
+	const isValid = await Expenses.validateArgs( args )
+
+	if ( Array.isArray( isValid ) && isValid.length ) {
+		const argErrors = isValid
+
 		return res.status( 400 ).json({
 			error: true,
-			data: errors,
+			data: argErrors,
 		})
 	}
 
-	const expenses = await Expenses.getExpensesByYearAndMonth( year, month )
+	const expenses = await Expenses.getExpenses( args )
 
 	return res.json({ expenses })
+})
+
+
+// get expenses between start and end date
+router.get( '/start/:start/end/:end', async ( req, res ) => {
+	const { params, query } = req
+	const { start, end } = params
+
+	const argErrors = []
+
+	if ( !validateDateFormat( start ) ) {
+		argErrors.push( 'Start date must be in a "YYYY-MM-DD" format.' )
+	}
+
+	if ( !validateDateFormat( end ) ) {
+		argErrors.push( 'End date must be in a "YYYY-MM-DD" format.' )
+	}
+
+	if ( !validateStartDateBeforeEndDate( start, end ) ) {
+		argErrors.push( 'Start date must be before or equal to end date.' )
+	}
+
+	if ( argErrors.length ) {
+		return res.status( 400 ).json( new ErrorResponseBody( argErrors, 400 ) )
+	}
+
+	return res.status( 200 ).json({})
 })
 
 

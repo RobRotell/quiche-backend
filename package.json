@@ -4,8 +4,8 @@
 	"description": "Backend for Quiche expense-tracking app",
 	"main": "./bin/www.js",
 	"scripts": {
-		"start": "node ./bin/www",
-		"watch": "node-dev --respawn --es-module-specifier-resolution=node ./bin/www"
+		"start": "NODE_OPTIONS='--experimental-specifier-resolution=node' node ./bin/www",
+		"watch": "node-dev --respawn ./bin/www  --es-module-specifier-resolution=node"
 	},
 	"repository": {
 		"type": "git",
@@ -23,6 +23,7 @@
 		"body-parser": "^1.20.2",
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
+		"dayjs": "^1.11.9",
 		"dotenv": "^16.3.1",
 		"express": "^4.18.2",
 		"express-jwt": "^8.4.1",

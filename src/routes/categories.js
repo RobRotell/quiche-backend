@@ -21,7 +21,7 @@ router.post( '/', async ( req, res ) => {
 		return res.status( 400 ).json({
 			error: true,
 			data: {
-				errors: 'A name must be passed to create a category.'
+				errors: 'A name must be passed to create a category.',
 			},
 		})
 	}

@@ -1,10 +1,5 @@
-import { debug } from 'console'
-
-
 // eslint-disable-next-line arrow-body-style
-const notFoundHandler = ( err, req, res ) => {
-	debug( err )
-
+const notFoundHandler = ( req, res ) => {
 	return res.status( 404 ).json({
 		error: true,
 		data: {

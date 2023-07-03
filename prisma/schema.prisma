@@ -11,7 +11,7 @@ model Expense {
 	id          Int      	@id @unique @default( autoincrement() )
 	year        Int
 	month       Int
-	date        DateTime
+	date        DateTime 	@db.Date
 	vendor 		Vendor?		@relation( fields: [ vendorId ], references: [ id ] )
 	vendorId    Int?
 	description	String
