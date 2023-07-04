@@ -4,12 +4,11 @@ import { isNumeric } from '../util/numbers'
 import { Vendors } from '../controllers/Vendors'
 import { Categories } from '../controllers/Categories'
 import { PayTypes } from '../controllers/PayTypes'
+import { QueryArgs } from './QueryArgs'
 
 
-export class ExpenseQueryArgs {
+export class GetExpensesQueryArgs extends QueryArgs {
 
-
-	args = null
 
 	id = null
 
@@ -29,8 +28,6 @@ export class ExpenseQueryArgs {
 
 	payTypeIds = []
 
-	errors = []
-
 
 	/**
 	 * Create instance
@@ -38,69 +35,68 @@ export class ExpenseQueryArgs {
 	 * @param {Object} args Base query args
 	 * @return {obj}
 	 */
-	constructor( args = {}) {
-		this.args = args
+	parseArgs() {
 
 		// eslint-disable-next-line object-curly-newline
-		let { id, year, month, date, startDate, endDate } = args
+		let { id, year, month, date, startDate, endDate } = this.args
 
 		if ( id ) {
 			id = parseInt( id, 10 )
 
-			if ( !Number.isNaN( id ) ) {
-				this.id = id
-			} else {
+			if ( Number.isNaN( id ) ) {
 				this.errors.push( 'Expense ID must be a numerical value.' )
+			} else {
+				this.id = id
 			}
 		}
 
 		if ( year ) {
 			year = sanitizeYear( year )
 
-			if ( year ) {
-				this.year = year
-			} else {
+			if ( !year ) {
 				this.errors.push( 'Year must be a numerical value between 2014 and 9999.' )
+			} else {
+				this.year = year
 			}
 		}
 
 		if ( month ) {
 			month = sanitizeMonth( month )
 
-			if ( month ) {
-				this.month = month
-			} else {
+			if ( !month ) {
 				this.errors.push( 'Month must be a numerical value between 1 and 12.' )
+			} else {
+				this.month = month
 			}
 		}
 
 		if ( date ) {
 			date = sanitizeDateFormat( date )
 
-			if ( date ) {
-				this.date = date
-			} else {
+			if ( !date ) {
 				this.errors.push( 'Date must be in a "YYYY-MM-DD" format.' )
+			} else {
+				this.date = date
 			}
 		}
 
 		if ( startDate ) {
 			startDate = sanitizeDateFormat( startDate )
 
-			if ( startDate ) {
-				this.startDate = startDate
-			} else {
+			if ( !startDate ) {
 				this.errors.push( 'Start date must be in a "YYYY-MM-DD" format.' )
+			} else {
+				this.startDate = startDate
 			}
 		}
 
 		if ( endDate ) {
 			endDate = sanitizeDateFormat( endDate )
 
-			if ( endDate ) {
-				this.endDate = endDate
-			} else {
+			if ( !endDate ) {
 				this.errors.push( 'End date must be in a "YYYY-MM-DD" format.' )
+			} else {
+				this.endDate = endDate
 			}
 		}
 
@@ -213,26 +209,6 @@ export class ExpenseQueryArgs {
 				}
 			}) )
 		}
-	}
-
-
-	/**
-	 * Get errors from parsing args
-	 *
-	 * @return {Array}
-	 */
-	getErrors() {
-		return this.errors
-	}
-
-
-	/**
-	 * Run into error(s) parsing args?
-	 *
-	 * @return {bool} True, if errors
-	 */
-	hasErrors() {
-		return !!this.errors.length
 	}
 
 }

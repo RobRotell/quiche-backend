@@ -76,9 +76,49 @@ const validateStartDateBeforeEndDate = ( startDate, endDate ) => {
 }
 
 
+/**
+ * Extract year from date string
+ *
+ * @param {string} dateRaw
+ * @return {int|bool} Year, if valid date; otherwise, false
+ */
+const extractYear = dateRaw => {
+	const dateFormatted = sanitizeDateFormat( dateRaw )
+
+	if ( !dateFormatted ) {
+		return false
+	}
+
+	const year = dayjs( dateFormatted ).format( 'YYYY' )
+
+	return parseInt( year, 10 )
+}
+
+
+/**
+ * Extract month from date string
+ *
+ * @param {string} dateRaw
+ * @return {int|bool} Month, if valid date; otherwise, false
+ */
+const extractMonth = dateRaw => {
+	const dateFormatted = sanitizeDateFormat( dateRaw )
+
+	if ( !dateFormatted ) {
+		return false
+	}
+
+	const month = dayjs( dateFormatted ).format( 'M' )
+
+	return parseInt( month, 10 )
+}
+
+
 export {
 	sanitizeYear,
 	sanitizeMonth,
 	sanitizeDateFormat,
 	validateStartDateBeforeEndDate,
+	extractYear,
+	extractMonth,
 }

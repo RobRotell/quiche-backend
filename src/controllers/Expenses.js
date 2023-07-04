@@ -1,6 +1,6 @@
 import ExpenseModel from '../models/Expense'
 import { DbClient } from './DbClient'
-import { ExpenseQueryArgs } from '../models/ExpenseQueryArgs'
+import { GetExpensesQueryArgs } from '../arguments/GetExpensesQueryArgs'
 import { GetExpensesQuery } from '../queries/GetExpensesQuery'
 
 
@@ -16,8 +16,8 @@ export class Expenses {
 	 * @return {Array}
 	 */
 	static async getExpenses( queryArgs ) {
-		if ( !( queryArgs instanceof ExpenseQueryArgs ) ) {
-			throw new Error( 'Argument must be an instance of ExpenseQueryArgs class.' )
+		if ( !( queryArgs instanceof GetExpensesQueryArgs ) ) {
+			throw new Error( 'Argument must be an instance of GetExpensesQuery class.' )
 		}
 
 		if ( queryArgs.getErrors().length ) {

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { prettifyPrice } from '../util/prices'
 
 
 export default class Expense {
@@ -49,7 +50,7 @@ export default class Expense {
 		this.description = description
 
 		this.amount = amount
-		this.price = `$${this.amount.toLocaleString( 'en-us', { minimumFractionDigits: 2 })}`
+		this.price = prettifyPrice( this.amount )
 
 		this.vendor = vendor
 		this.category = category
@@ -74,7 +75,7 @@ export default class Expense {
 
 			description: this.description,
 			amount: this.amount,
-			// price: this.price,
+			price: this.price,
 
 			vendor: this.vendor,
 			category: this.category,
