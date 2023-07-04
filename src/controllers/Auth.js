@@ -90,12 +90,8 @@ class Auth {
 			return false
 		}
 
-		console.log( decoded )
-
 		if ( decoded.data ) {
 			const { username, password } = decoded.data
-
-			console.log( username, password )
 
 			return this.validateUser( username, password )
 		}

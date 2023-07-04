@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+// eslint-disable-next-line object-curly-newline
 import { sanitizeDateFormat, sanitizeMonth, sanitizeYear, validateStartDateBeforeEndDate } from '../util/dates'
 import { isNumeric } from '../util/numbers'
 import { Vendors } from '../controllers/Vendors'
@@ -27,7 +27,7 @@ export class ExpenseQueryArgs {
 
 	categoryIds = []
 
-	payTypeIds = null
+	payTypeIds = []
 
 	errors = []
 
@@ -60,7 +60,7 @@ export class ExpenseQueryArgs {
 			if ( year ) {
 				this.year = year
 			} else {
-				this.errors.push( 'Year must be a numical value between 2014 and 9999.' )
+				this.errors.push( 'Year must be a numerical value between 2014 and 9999.' )
 			}
 		}
 
@@ -104,13 +104,14 @@ export class ExpenseQueryArgs {
 			}
 		}
 
+		// if query has start date and end date, check that start date is before end date
 		if ( this.startDate || this.endDate ) {
 			if ( !validateStartDateBeforeEndDate( this.startDate, this.endDate ) ) {
 				this.errors.push( 'Start date must be before end date.' )
-			}
 
-			this.startDate = null
-			this.endDate = null
+				this.startDate = null
+				this.endDate = null
+			}
 		}
 	}
 
@@ -195,7 +196,7 @@ export class ExpenseQueryArgs {
 					const isValidPayTypeId = await PayTypes.validateId( paytypeId )
 
 					if ( isValidPayTypeId ) {
-						this.paytypeIds.push( paytypeId )
+						this.payTypeIds.push( paytypeId )
 					} else {
 						this.errors.push( `Pay type ID: "${paytypeId}" does not match any pay type.` )
 					}
@@ -205,7 +206,7 @@ export class ExpenseQueryArgs {
 					const vendorObj = await PayTypes.getByName( paytype )
 
 					if ( vendorObj ) {
-						this.paytypeIds.push( vendorObj.id )
+						this.payTypeIds.push( vendorObj.id )
 					} else {
 						this.errors.push( `Pay type name: "${paytype}" does not match any pay type.` )
 					}
@@ -222,6 +223,16 @@ export class ExpenseQueryArgs {
 	 */
 	getErrors() {
 		return this.errors
+	}
+
+
+	/**
+	 * Run into error(s) parsing args?
+	 *
+	 * @return {bool} True, if errors
+	 */
+	hasErrors() {
+		return !!this.errors.length
 	}
 
 }

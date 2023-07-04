@@ -44,7 +44,7 @@ export default class Expense {
 		this.month = dateObj.format( 'MM' )
 		this.day = dateObj.format( 'DD' )
 
-		this.date = dateObj.format( 'YYYY/MM/DD' )
+		this.date = dateObj.format( 'YYYY-MM-DD' )
 
 		this.description = description
 

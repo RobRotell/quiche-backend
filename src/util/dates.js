@@ -2,9 +2,8 @@ import dayjs from 'dayjs'
 // import dayjsFormat from 'dayjs/plugin/advancedFormat'
 
 
-
 /**
- * Validate value is a number and between 2010 (when Rob first started tracking expenses) and 9999 (when Rob has 
+ * Validate value is a number and between 2010 (when Rob first started tracking expenses) and 9999 (when Rob has
  * certainly stopped tracking expenses)
  *
  * @param {mixed} arg

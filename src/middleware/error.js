@@ -2,6 +2,7 @@ import { debug } from 'console'
 
 
 // eslint-disable-next-line arrow-body-style
+// eslint-disable-next-line no-unused-vars
 function errorHandler( err, req, res, next ) {
 	debug( err )
 

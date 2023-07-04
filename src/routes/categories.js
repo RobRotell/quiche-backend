@@ -48,7 +48,7 @@ router.delete( '/', async ( req, res ) => {
 		return res.status( 400 ).json({
 			error: true,
 			data: {
-				errors: 'A numerical ID must be passed to delete a category.'
+				errors: 'A numerical ID must be passed to delete a category.',
 			},
 		})
 	}
