@@ -2,8 +2,8 @@ import express from 'express'
 import { Expenses } from '../controllers/Expenses'
 import { ErrorResponseBody } from '../models/ErrorResponse'
 import { GetExpensesQueryArgs } from '../arguments/GetExpensesQueryArgs'
-import { CreateExpensesQueryArgs } from '../arguments/CreateExpensesQueryArgs'
-import { log } from 'console'
+import { CreateExpenseQueryArgs } from '../arguments/CreateExpenseQueryArgs'
+import { ResponseBody } from '../models/ResponseBody'
 
 
 const router = express.Router()
@@ -26,7 +26,7 @@ router.get( '/', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json({ expenses })
+	return res.json( new ResponseBody({ expenses }) )
 })
 
 
@@ -43,7 +43,7 @@ router.get( '/:id', async ( req, res ) => {
 
 	const expense = await Expenses.getExpenses( queryArgs )
 
-	return res.json({ expense })
+	return res.json( new ResponseBody({ expense }) )
 })
 
 
@@ -65,7 +65,7 @@ router.get( '/year/:year', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json({ expenses })
+	return res.json( new ResponseBody({ expenses }) )
 })
 
 
@@ -76,7 +76,7 @@ router.get( '/year/:year/month/:month', async ( req, res ) => {
 
 	const queryArgs = new GetExpensesQueryArgs({ year, month })
 
-	queryArgs.parseArgs()
+	await queryArgs.parseArgs()
 
 	// extract vendors, categories, and pay types (if present) from query string
 	await queryArgs.setTermsFromQuery( query )
@@ -87,7 +87,7 @@ router.get( '/year/:year/month/:month', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json({ expenses })
+	return res.json( new ResponseBody({ expenses }) )
 })
 
 
@@ -109,7 +109,7 @@ router.get( '/date/:date', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json({ expenses })
+	return res.json( new ResponseBody({ expenses }) )
 })
 
 
@@ -120,7 +120,7 @@ router.get( '/start/:start/end/:end', async ( req, res ) => {
 
 	const queryArgs = new GetExpensesQueryArgs({ startDate, endDate })
 
-	queryArgs.parseArgs()
+	await queryArgs.parseArgs()
 
 	// extract vendors, categories, and pay types (if present) from query string
 	await queryArgs.setTermsFromQuery( query )
@@ -138,16 +138,27 @@ router.get( '/start/:start/end/:end', async ( req, res ) => {
 // add new expense
 router.post( '/', async ( req, res ) => {
 	const { body } = req
-	const queryArgs = new CreateExpensesQueryArgs( body )
+	const queryArgs = new CreateExpenseQueryArgs( body )
 
-	queryArgs.parseArgs()
+	await queryArgs.parseArgs()
 
 	if ( queryArgs.hasErrors() ) {
 		return res.status( 400 ).json( new ErrorResponseBody( queryArgs.getErrors() ) )
 	}
 
-	return res.json({})
+	const expense = await Expenses.createExpense( queryArgs )
+
+	return res.json( new ResponseBody({
+		added: true,
+		expense,
+	}) )
 })
+
+
+// update expense
+
+
+// delete expense
 
 
 export default router

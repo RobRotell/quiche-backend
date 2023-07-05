@@ -1,21 +1,22 @@
 // eslint-disable-next-line object-curly-newline
-import { extractMonth, extractYear, sanitizeDateFormat, sanitizeMonth, sanitizeYear, validateStartDateBeforeEndDate } from '../util/dates'
+import { extractMonth, extractYear, sanitizeDateFormat } from '../util/dates'
 import { isNumeric } from '../util/numbers'
 import { Vendors } from '../controllers/Vendors'
 import { Categories } from '../controllers/Categories'
 import { PayTypes } from '../controllers/PayTypes'
 import { QueryArgs } from './QueryArgs'
-import { log } from 'console'
 
 
-export class CreateExpensesQueryArgs extends QueryArgs {
+export class CreateExpenseQueryArgs extends QueryArgs {
 
+
+	date = null
 
 	year = null
 
 	month = null
 
-	date = null
+	description = null
 
 	vendorId = null
 
@@ -32,7 +33,9 @@ export class CreateExpensesQueryArgs extends QueryArgs {
 	 */
 	async parseArgs() {
 		let { date, amount } = this.args
-		const { vendor, category, paytype } = this.args
+
+		// eslint-disable-next-line object-curly-newline
+		const { description, vendor, category, paytype } = this.args
 
 		if ( !date ) {
 			this.errors.push( 'Expense must have a date.' )
@@ -65,6 +68,12 @@ export class CreateExpensesQueryArgs extends QueryArgs {
 			}
 		}
 
+		if ( !description ) {
+			this.errors.push( 'Expense must have a description.' )
+		} else {
+			this.description = description
+		}
+
 		/**
 		 * While vendors, categories, and pay types are *not* required in the DB (in case the term was deleted), we're
 		 * requiring them to create entries
@@ -77,8 +86,9 @@ export class CreateExpensesQueryArgs extends QueryArgs {
 			// eslint-disable-next-line no-lonely-if
 			if ( isNumeric( vendor ) ) {
 				const vendorId = parseInt( vendor, 10 )
+				const isValidVendorId = await Vendors.validateId( vendorId )
 
-				if ( !Vendors.validateId( vendorId ) ) {
+				if ( !isValidVendorId ) {
 					this.errors.push( 'Vendor ID does not match a vendor.' )
 				} else {
 					this.vendorId = vendorId
@@ -108,8 +118,9 @@ export class CreateExpensesQueryArgs extends QueryArgs {
 			// eslint-disable-next-line no-lonely-if
 			if ( isNumeric( category ) ) {
 				const categoryId = parseInt( category, 10 )
+				const isValidCategoryId = await Categories.validateId( categoryId )
 
-				if ( !Categories.validateId( categoryId ) ) {
+				if ( !isValidCategoryId ) {
 					this.errors.push( 'Category ID does not match a category.' )
 				} else {
 					this.categoryId = categoryId
@@ -139,8 +150,9 @@ export class CreateExpensesQueryArgs extends QueryArgs {
 			// eslint-disable-next-line no-lonely-if
 			if ( isNumeric( paytype ) ) {
 				const payTypeId = parseInt( paytype, 10 )
+				const isValidPayTypeId = await PayTypes.validateId( payTypeId )
 
-				if ( !PayTypes.validateId( payTypeId ) ) {
+				if ( !isValidPayTypeId ) {
 					this.errors.push( 'Pay type ID does not match a paytype.' )
 				} else {
 					this.payTypeId = payTypeId

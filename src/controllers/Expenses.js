@@ -2,6 +2,8 @@ import ExpenseModel from '../models/Expense'
 import { DbClient } from './DbClient'
 import { GetExpensesQueryArgs } from '../arguments/GetExpensesQueryArgs'
 import { GetExpensesQuery } from '../queries/GetExpensesQuery'
+import { CreateExpenseQueryArgs } from '../arguments/CreateExpenseQueryArgs'
+import { CreateExpenseQuery } from '../queries/CreateExpenseQuery'
 
 
 export class Expenses {
@@ -9,18 +11,18 @@ export class Expenses {
 	/**
 	 * Get all expenses, sorted descending by date
 	 *
-	 * @throws {Error} Argument isn't a QueryArgument instance
-	 * @throws {Error} QueryArgument has errors
+	 * @throws {Error} Argument isn't a GetExpensesQueryArgs instance
+	 * @throws {Error} Query args has errors
 	 *
-	 * @param {QueryArguments} queryArgs
+	 * @param {GetExpensesQueryArgs} queryArgs
 	 * @return {Array}
 	 */
 	static async getExpenses( queryArgs ) {
 		if ( !( queryArgs instanceof GetExpensesQueryArgs ) ) {
-			throw new Error( 'Argument must be an instance of GetExpensesQuery class.' )
+			throw new Error( 'Argument must be an instance of GetExpensesQueryArgs class.' )
 		}
 
-		if ( queryArgs.getErrors().length ) {
+		if ( queryArgs.hasErrors() ) {
 			throw new Error( 'Argument has errors and cannot be used to query expenses.' )
 		}
 
@@ -33,6 +35,36 @@ export class Expenses {
 		const expenses = await client.expense.findMany( queryObj.getQuery() )
 
 		return expenses.map( expense => new ExpenseModel( expense ).package() )
+	}
+
+
+	/**
+	 * Create expense
+	 *
+	 * @throws {Error} Argument isn't a CreateExpenseQueryArgs instance
+	 * @throws {Error} Query args has errors
+	 *
+	 * @param {CreateExpenseQueryArgs} queryArgs
+	 * @return {Object}
+	 */
+	static async createExpense( queryArgs ) {
+		if ( !( queryArgs instanceof CreateExpenseQueryArgs ) ) {
+			throw new Error( 'Argument must be an instance of CreateExpenseQueryArgs class.' )
+		}
+
+		if ( queryArgs.hasErrors() ) {
+			throw new Error( 'Argument has errors and cannot be used to create an expense.' )
+		}
+
+		// build query for Prisma from args
+		const queryObj = new CreateExpenseQuery( queryArgs )
+
+		// connection to DB through Prisma
+		const client = DbClient.getClient()
+
+		const expense = await client.expense.create( queryObj.getQuery() )
+
+		return new ExpenseModel( expense ).package()
 	}
 
 }
