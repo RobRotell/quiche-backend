@@ -4,11 +4,7 @@ import { ResponseBody } from './ResponseBody'
 export class ErrorResponseBody extends ResponseBody {
 
 
-	code = null
-
 	error = null
-
-	data = {}
 
 
 	/**
@@ -18,14 +14,11 @@ export class ErrorResponseBody extends ResponseBody {
 	 * @param {int} code HTTP status code
 	 */
 	constructor( errors = '', code = 400 ) {
-		super()
-
-		this.code = code
-		this.error = true
-
-		this.data = {
+		super({
 			errors,
-		}
+		}, code )
+
+		this.error = true
 	}
 
 }

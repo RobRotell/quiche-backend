@@ -1,5 +1,7 @@
 import express from 'express'
 import { Categories } from '../controllers/Categories'
+import { ResponseBody } from '../models/ResponseBody'
+import { ErrorResponseBody } from '../models/ErrorResponseBody'
 
 
 const router = express.Router()
@@ -9,7 +11,7 @@ const router = express.Router()
 router.get( '/', async ( req, res ) => {
 	const categories = await Categories.getAll()
 
-	return res.json({ categories })
+	return res.json( new ResponseBody({ categories }) )
 })
 
 
@@ -18,12 +20,7 @@ router.post( '/', async ( req, res ) => {
 	const { body: { name } } = req
 
 	if ( !name ) {
-		return res.status( 400 ).json({
-			error: true,
-			data: {
-				errors: 'A name must be passed to create a category.',
-			},
-		})
+		return res.status( 400 ).json( new ErrorResponseBody( 'A name must be passed to create a category.' ) )
 	}
 
 	// first, see if the category already exists
@@ -34,7 +31,7 @@ router.post( '/', async ( req, res ) => {
 		category = await Categories.create( name )
 	}
 
-	return res.json({ category })
+	return res.json( new ResponseBody({ category }) )
 })
 
 
@@ -45,17 +42,12 @@ router.delete( '/', async ( req, res ) => {
 	id = parseInt( id, 10 )
 
 	if ( Number.isNaN( id ) ) {
-		return res.status( 400 ).json({
-			error: true,
-			data: {
-				errors: 'A numerical ID must be passed to delete a category.',
-			},
-		})
+		return res.status( 400 ).json( new ErrorResponseBody( 'A numerical ID must be passed to delete a category.' ) )
 	}
 
 	const deleted = await Categories.deleteById( id )
 
-	return res.json({ deleted })
+	return res.json( new ResponseBody({ deleted }) )
 })
 
 

@@ -37,6 +37,8 @@ export class GetExpensesQueryArgs extends QueryArgs {
 	 */
 	parseArgs() {
 
+		console.log( this )
+
 		// eslint-disable-next-line object-curly-newline
 		let { id, year, month, date, startDate, endDate } = this.args
 

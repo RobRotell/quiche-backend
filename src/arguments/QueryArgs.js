@@ -11,7 +11,7 @@ export class QueryArgs {
 	 *
 	 * @param {Object} args
 	 */
-	constructor( args ) {
+	constructor( args = {}) {
 		this.args = args
 	}
 

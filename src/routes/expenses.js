@@ -1,6 +1,6 @@
 import express from 'express'
 import { Expenses } from '../controllers/Expenses'
-import { ErrorResponseBody } from '../models/ErrorResponse'
+import { ErrorResponseBody } from '../models/ErrorResponseBody'
 import { GetExpensesQueryArgs } from '../arguments/GetExpensesQueryArgs'
 import { CreateExpenseQueryArgs } from '../arguments/CreateExpenseQueryArgs'
 import { ResponseBody } from '../models/ResponseBody'
@@ -26,7 +26,10 @@ router.get( '/', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json( new ResponseBody({ expenses }) )
+	return res.json( new ResponseBody({
+		count: expenses.length,
+		expenses,
+	}) )
 })
 
 
@@ -43,7 +46,10 @@ router.get( '/:id', async ( req, res ) => {
 
 	const expense = await Expenses.getExpenses( queryArgs )
 
-	return res.json( new ResponseBody({ expense }) )
+	return res.json( new ResponseBody({
+		count: expense.length, // *should* be one, if any
+		expense,
+	}) )
 })
 
 
@@ -65,7 +71,10 @@ router.get( '/year/:year', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json( new ResponseBody({ expenses }) )
+	return res.json( new ResponseBody({
+		count: expenses.length,
+		expenses,
+	}) )
 })
 
 
@@ -87,7 +96,10 @@ router.get( '/year/:year/month/:month', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json( new ResponseBody({ expenses }) )
+	return res.json( new ResponseBody({
+		count: expenses.length,
+		expenses,
+	}) )
 })
 
 
@@ -109,7 +121,10 @@ router.get( '/date/:date', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json( new ResponseBody({ expenses }) )
+	return res.json( new ResponseBody({
+		count: expenses.length,
+		expenses,
+	}) )
 })
 
 
@@ -131,7 +146,10 @@ router.get( '/start/:start/end/:end', async ( req, res ) => {
 
 	const expenses = await Expenses.getExpenses( queryArgs )
 
-	return res.json({ expenses })
+	return res.json( new ResponseBody({
+		count: expenses.length,
+		expenses,
+	}) )
 })
 
 

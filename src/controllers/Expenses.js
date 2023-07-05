@@ -4,6 +4,9 @@ import { GetExpensesQueryArgs } from '../arguments/GetExpensesQueryArgs'
 import { GetExpensesQuery } from '../queries/GetExpensesQuery'
 import { CreateExpenseQueryArgs } from '../arguments/CreateExpenseQueryArgs'
 import { CreateExpenseQuery } from '../queries/CreateExpenseQuery'
+import { Vendors } from './Vendors'
+import { Categories } from './Categories'
+import { PayTypes } from './PayTypes'
 
 
 export class Expenses {
@@ -63,6 +66,11 @@ export class Expenses {
 		const client = DbClient.getClient()
 
 		const expense = await client.expense.create( queryObj.getQuery() )
+
+		// get term objects to help create expense model
+		expense.vendor = await Vendors.getById( expense.vendorId )
+		expense.category = await Categories.getById( expense.categoryId )
+		expense.payType = await PayTypes.getById( expense.payTypeId )
 
 		return new ExpenseModel( expense ).package()
 	}

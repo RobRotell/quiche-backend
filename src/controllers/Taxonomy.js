@@ -69,11 +69,11 @@ export class Taxonomy {
 	/**
 	 * Get term by name
 	 *
-	 * @param {string} arg
+	 * @param {string} name
 	 * @return {Object} Object with id/name if match; otherwise, false
 	 */
-	static async getByName( arg ) {
-		if ( 'string' !== typeof arg ) {
+	static async getByName( name ) {
+		if ( 'string' !== typeof name ) {
 			return false
 		}
 
@@ -81,7 +81,30 @@ export class Taxonomy {
 
 		const match = await client[this.schemaName].findFirst({
 			where: {
-				name: arg,
+				name,
+			},
+		})
+
+		return match || false
+	}
+
+
+	/**
+	 * Get term by ID
+	 *
+	 * @param {int} id
+	 * @return {Object} Object with id/name if match; otherwise, false
+	 */
+	static async getById( id ) {
+		if ( !id || Number.isNaN( id ) ) {
+			return false
+		}
+
+		const client = this.getDbClient()
+
+		const match = await client[this.schemaName].findFirst({
+			where: {
+				id,
 			},
 		})
 
